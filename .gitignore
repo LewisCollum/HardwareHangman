@@ -1,0 +1,6 @@
+*cache/
+*sim/
+*runs/
+*hw/
+vunit_out/
+#*
