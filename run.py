@@ -7,7 +7,14 @@ source = os.path.join(root, "source")
 libraries = dict.fromkeys([
     "user",
     "ps2",
-    "testing"
+    "debouncer",
+    "enabler",
+    "timer_counter",
+    "shift_register",
+    "testing",
+    "edge_detector",
+    "synchronizer",
+    "flip_flop"
 ])
 
 board = ui.add_library("zyboz7");
