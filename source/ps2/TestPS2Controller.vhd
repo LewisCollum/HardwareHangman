@@ -46,6 +46,10 @@ begin
           data => unit.peripheral.data,
           clock => unit.peripheral.clock,
           period => peripheral.period); --a
+
+        unit.peripheral.clock <= 'H';        
+        unit.peripheral.data <= 'H';        
+        wait for peripheral.period*2;
         
         serial_util.sendStreamWithParityOnRisingEdgeOfClock(
           dataToSend => "01001100",

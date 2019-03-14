@@ -10,12 +10,12 @@ package shift_pkg is
     output: unsigned;
   end record;
 
-  function flipBitOrder(input: unsigned) return unsigned;
+  function flipBitOrder(signal input: in unsigned) return unsigned;
   
 end package;
 
 package body shift_pkg is
-  function flipBitOrder(input: unsigned) return unsigned is
+  function flipBitOrder(signal input: in unsigned) return unsigned is
     variable output: unsigned(input'length-1 downto 0);
   begin
     for i in output'range loop

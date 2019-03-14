@@ -1,7 +1,7 @@
-library ieee, edge_detector;
+library ieee, synchronizer;
 use ieee.std_logic_1164.all;
 use work.ps2_pkg;
-use edge_detector.edge_pkg;
+use synchronizer.sync_pkg;
 use work.ps2_pkg.initializing,
   work.ps2_pkg.ready,
   work.ps2_pkg.starting,
@@ -17,51 +17,30 @@ entity PeripheralClockEdgeDetector is
 end entity;
 
 architecture behavioral of PeripheralClockEdgeDetector is
-  signal edgeDetector: edge_pkg.EdgeDetector;
+  signal clockSynced: std_logic;
 begin
 
-  edgeDetector.clock <= clock;
-  edgeDetector.input <= clockPeripheral;
-  
-  stateMachine: process(state, edgeDetector.output)
-    procedure waitForRisingEdge is
-    begin
-      edgeDetector.direction <= edge_pkg.rising;
-      flag.isRising <= edgeDetector.output;
-    end procedure;
-
-    procedure waitForFallingEdge is
-    begin
-      edgeDetector.direction <= edge_pkg.falling;
-      flag.isFalling <= edgeDetector.output;
-    end procedure;
-    
+  stateMachine: process(state, clockSynced)
   begin
     case state is
-      when initializing =>
-        edgeDetector.reset <= '1';
+      when initializing | ready =>
         flag <= (others => '0');
         
-      when ready =>
-        edgeDetector.reset <= '0';
-        
       when starting | fetching =>
-        waitForFallingEdge;
+        flag.isFalling <= not clockSynced;
         flag.isRising <= '0';
         
       when storing =>
-        waitForRisingEdge;
+        flag.isRising <= clockSynced;
         flag.isFalling <= '0';
 
-    end case;
-    
+    end case;  
   end process;
-  
-  synchronizedEdgeDetector: entity edge_detector.EdgeDetector
+
+  clockSynchronizer: entity synchronizer.Synchronizer
     port map(
-      clock => edgeDetector.clock,
-      reset => edgeDetector.reset,
-      direction => edgeDetector.direction,
-      input => edgeDetector.input,
-      output => edgeDetector.output);
+      clock => clock,
+      input => clockPeripheral,
+      output => clockSynced);
+  
 end architecture;

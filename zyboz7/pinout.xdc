@@ -34,4 +34,3 @@ set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports ps2_clock]
 
 set_property PULLUP true [get_ports ps2_clock]
 set_property PULLUP true [get_ports ps2_data]
-

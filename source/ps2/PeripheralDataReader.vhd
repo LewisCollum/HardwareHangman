@@ -22,14 +22,10 @@ end entity;
 architecture behavioral of PeripheralDataReader is
   constant memoryWidth: positive := ps2_pkg.totalTransmitLength;
   signal memory: shift_pkg.SIPOShiftRegister(output(memoryWidth-1 downto 0));
-  signal dataSynced: sync_pkg.Synchronizer; 
+  signal dataSynced: std_logic; 
 begin
 
-  dataSynced.clock <= clock;
-  dataSynced.input <= dataPeripheral;
-  
-  stateMachine: process(state, dataSynced.output) is
-
+  stateMachine: process(state, dataSynced, memory) is
   begin
     case state is
       when initializing =>
@@ -40,14 +36,14 @@ begin
         
       when ready =>
         data <= shift_pkg.flipBitOrder(memory.output(ps2_pkg.CodeByteRange));
-        flag.isNewData <= not dataSynced.output;
+        flag.isNewData <= not dataSynced;
 
       when starting =>
         flag.isNewData <= '0';
         memory.reset <= '0';
         
       when storing =>
-        memory.input <= dataSynced.output;
+        memory.input <= dataSynced;
         memory.clock <= '0';
         
       when fetching =>
@@ -58,9 +54,9 @@ begin
 
   dataSynchronizer: entity synchronizer.Synchronizer
     port map(
-      clock => dataSynced.clock,
-      input => dataSynced.input,
-      output => dataSynced.output);
+      clock => clock,
+      input => dataPeripheral,
+      output => dataSynced);
   
   sipoShiftRegister: entity shift_register.SIPOShiftRegister
     generic map(width => memoryWidth)

@@ -20,34 +20,37 @@ begin
 
   updateState: process(clock, reset, flag)
   begin
-     if rising_edge(clock) then
-      case state is
-        when initializing =>
-          state <= unaffected when reset = '1' else
-                   ready;
-          
-        when ready =>
-          state <= initializing when reset = '1' else
-                   starting when flag.isNewData = '1' else
-                   ready;
+    if rising_edge(clock) then
+      if reset = '1' then
+        state <= initializing;
+      else
+        case state is
+          when initializing =>
+            state <= ready;
+            
+          when ready =>
+            if flag.isNewData = '1' then
+              state <= starting;
+            end if;
 
-        when starting =>
-          state <= initializing when reset = '1' else
-                   storing when flag.isReadyToStore = '1' else
-                   starting;
+          when starting =>
+            if flag.isReadyToStore = '1' then
+              state <= storing;
+            end if;
 
-        when storing =>
-          state <= initializing when reset = '1' else
-                   ready when flag.isBitCounterDone = '1' else
-                   fetching when flag.isReadyToFetch = '1' else
-                   storing;
-          
-        when fetching =>
-          state <= initializing when reset = '1' else
-                   storing when flag.isReadyToStore = '1' else
-                   fetching;
-
-      end case;
+          when storing =>
+            if flag.isBitCounterDone = '1' then
+              state <= ready;
+            elsif flag.isReadyToFetch = '1' then
+              state <= fetching;
+            end if;
+            
+          when fetching =>
+            if flag.isReadyToStore = '1' then
+              state <= storing;
+            end if;
+        end case;
+      end if;
     end if;
   end process;
 end architecture;

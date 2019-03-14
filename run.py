@@ -14,7 +14,8 @@ libraries = dict.fromkeys([
     "testing",
     "edge_detector",
     "synchronizer",
-    "flip_flop"
+    "flip_flop",
+    "uart"
 ])
 
 board = ui.add_library("zyboz7");

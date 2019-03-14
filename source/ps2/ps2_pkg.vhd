@@ -24,6 +24,10 @@ package ps2_pkg is
 
   type FlagExternal is record
     isNewData: std_logic;
+    isInitializing: std_logic;
+    isStoring: std_logic;
+    isFetching: std_logic;
+    isStart: std_logic;
   end record;
 
   type FlagPeripheralClock is record

@@ -12,6 +12,8 @@ architecture behavioral of DFlipFlop is
 begin
   process(clock)
   begin
-    output <= data when rising_edge(clock);
+    if rising_edge(clock) then
+      output <= data;
+    end if;
   end process;
 end architecture;
